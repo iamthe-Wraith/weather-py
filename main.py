@@ -86,5 +86,6 @@ for forecast in weather_data["list"]:
 
 if will_rain:
     print("It's going to rain today.")
-else:
-    print("It's not going to rain today.")
+    # TODO: send an SMS message to user letting them know it's going to rain
+    # didn't feel like implementing Twilio for this since it's a bit more of
+    # a hassle in the US.
