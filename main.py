@@ -33,6 +33,7 @@ def get_weather(lat: float, lon: float):
     '''
     try:
         params = {
+            "cnt": 4,
             "lat": lat,
             "lon": lon,
             "appid": os.getenv("WEATHER_API_KEY")
@@ -44,11 +45,46 @@ def get_weather(lat: float, lon: float):
         print(f"Error fetching weather data: {e}")
         return None
 
+def is_going_to_rain(id: int):
+    '''
+    Check if the weather is going to rain based on the weather ID.
+
+    Anything below 700 indicates some form of precipitation (e.g. rain, snow, etc.).
+
+    Args:
+        id (int): The weather ID.
+
+    Returns:
+        bool: True if it's going to rain, False otherwise.
+    '''
+    return id < 700
+
 
 location_data = get_location()
+
+if not location_data:
+    # failed to fetch location data...exiting
+    exit(1)
+
 location = [float(coord) for coord in location_data["loc"].split(",")]
 
 weather_data = get_weather(location[0], location[1])
 
-with open("weather.json", "w") as f:
-    json.dump(weather_data, f, indent=4)
+if not weather_data:
+    # failed to fetch weather data...exiting
+    exit(1)
+
+will_rain = False
+
+for forecast in weather_data["list"]:
+    for weather in forecast["weather"]:
+        id = weather["id"]
+
+        if (is_going_to_rain(id)):
+            will_rain = True
+            break
+
+if will_rain:
+    print("It's going to rain today.")
+else:
+    print("It's not going to rain today.")
